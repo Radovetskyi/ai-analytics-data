@@ -1,0 +1,40 @@
+semantic_models:
+  - name: solid_transactions
+    description: "Transaction data from solid table"
+    model: ref('solid')
+    
+    defaults:
+      agg_time_dimension: transaction_date
+    
+    entities:
+      - name: transaction_id
+        type: primary
+        expr: id
+    
+    dimensions:
+      - name: transaction_date
+        type: time
+        type_params:
+          time_granularity: day
+        expr: created_at
+      
+      - name: status
+        type: categorical
+        expr: status
+      
+      - name: currency
+        type: categorical
+        expr: currency
+    
+    measures:
+      - name: transaction_amount
+        agg: sum
+        expr: amount
+      
+      - name: processing_amount
+        agg: sum
+        expr: processing_amount
+      
+      - name: transaction_count
+        agg: count
+        expr: id
