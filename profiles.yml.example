@@ -1,0 +1,22 @@
+ai_project:
+  target: dev
+  outputs: 
+    dev: 
+      type: clickhouse
+      threads: 4
+      host:
+      port:
+      user:
+      password:
+      database: dev_ai_analytics
+      schema: dev_ai_analytics
+
+    prod:
+      type: clickhouse
+      threads: 4
+      host:
+      port:
+      user:
+      password:
+      database: ai_analytics
+      schema: ai_analytics
