@@ -5,6 +5,4 @@ sources:
     database: ai_analytics
     description: ""
     tables:
-      - name: keywords_local
-      
-      - name: solid_local
+      - name: trips_small
