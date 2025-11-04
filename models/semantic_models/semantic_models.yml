@@ -1,0 +1,154 @@
+semantic_models:
+  - name: fact_trips
+    description: "NYC Taxi Trips fact table. Grain = 1 row per trip."
+
+    model: ref('fact_trips')
+
+    primary_key: trip_id
+
+    grain:
+      - trip_id
+
+    defaults:
+      agg_time_dimension: pickup_datetime
+      filter: "total_amount > 0 AND passenger_count > 0"
+
+    entities:
+      - name: trip
+        type: primary
+        expr: trip_id
+
+    time_dimensions:
+      - name: pickup_datetime
+        type: time
+        label: "Trip pickup datetime"
+        type_params:
+          time_granularity: second
+          supported_time_grains: [minute, hour, day, week, month, quarter, year]
+
+      - name: dropoff_datetime
+        type: time
+        label: "Trip dropoff datetime"
+        type_params:
+          time_granularity: second
+          supported_time_grains: [minute, hour, day, week, month, quarter, year]
+
+    dimensions:
+      - name: pickup_ntaname
+        label: "Pickup area"
+        type: categorical
+
+      - name: dropoff_ntaname
+        label: "Dropoff area"
+        type: categorical
+
+      - name: payment_type
+        label: "Payment method"
+        type: categorical
+        description: |
+          Payment type codes:
+            CSH = Cash 
+            CRE = Credit
+            NOC = No charge
+            DIS = Discount
+            UNK = Unknown
+
+      - name: passenger_count
+        type: numeric
+
+    # Derived (calculated) fields
+    derived_dimensions:
+      - name: trip_duration_minutes
+        label: "Duration (minutes)"
+        expr: "dateDiff('minute', pickup_datetime, dropoff_datetime)"
+        type: numeric
+
+      - name: trip_duration_sec
+        label: "Duration (seconds)"
+        expr: "dateDiff('second', pickup_datetime, dropoff_datetime)"
+        type: numeric
+
+      - name: pickup_hour
+        expr: "toStartOfHour(pickup_datetime)"
+        type: time
+        type_params:
+          time_granularity: hour
+
+      - name: trip_day_of_week
+        expr: "toDayOfWeek(pickup_datetime)"
+        type: categorical
+
+      - name: trip_distance_bucket
+        type: categorical
+        expr: |
+          case 
+            when trip_distance < 1 then '0-1 mi'
+            when trip_distance < 3 then '1-3 mi'
+            when trip_distance < 7 then '3-7 mi'
+            else '7+ mi'
+          end
+
+    measures:
+      - name: trips
+        agg: count
+        label: "Trips count"
+
+      - name: total_fare
+        expr: fare_amount
+        agg: sum
+
+      - name: total_tips
+        expr: tip_amount
+        agg: sum
+
+      - name: total_tolls
+        expr: tolls_amount
+        agg: sum
+
+      - name: total_amount
+        expr: total_amount
+        agg: sum
+
+      - name: avg_trip_amount
+        expr: total_amount
+        agg: average
+
+      - name: avg_tip_amount
+        expr: tip_amount
+        agg: average
+
+      - name: avg_trip_distance
+        expr: trip_distance
+        agg: average
+
+      - name: avg_tip_pct
+        expr: "tip_amount / nullIf(fare_amount, 0)"
+        agg: average
+        description: "Average tip percent relative to fare base"
+
+      - name: revenue_per_mile
+        expr: "total_amount / nullIf(trip_distance, 0)"
+        agg: average
+
+    tags: ["nyc", "taxi", "transport", "fare", "finance", "geodata"]
+
+    examples:
+      - name: hourly_trips
+        description: Trips per hour
+        sql: |
+          select
+            toStartOfHour(pickup_datetime) as pickup_hour,
+            count(*) as trips
+          from {{ ref('fact_trips') }}
+          group by pickup_hour
+          order by pickup_hour;
+
+      - name: avg_fare_by_area
+        description: Avg fare per pickup area
+        sql: |
+          select
+            pickup_ntaname,
+            avg(total_amount) as avg_fare
+          from {{ ref('fact_trips') }}
+          group by pickup_ntaname
+          order by avg_fare desc;
