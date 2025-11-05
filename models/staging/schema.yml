@@ -1,0 +1,27 @@
+version: 2
+
+models:
+  - name: time_spine
+    description: "Time spine model with daily granularity for MetricFlow semantic layer"
+    config:
+      materialized: table
+    time_spine:
+      standard_granularity_column: date_day
+    columns:
+      - name: date_day
+        description: "Date at daily granularity"
+        data_type: date
+        granularity: day
+      - name: week_start
+        description: "Start of week for the date"
+        data_type: date
+      - name: month_start
+        description: "Start of month for the date"
+        data_type: date
+      - name: quarter_start
+        description: "Start of quarter for the date"
+        data_type: date
+      - name: year_start
+        description: "Start of year for the date"
+        data_type: date
+
