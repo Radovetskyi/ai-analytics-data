@@ -5,4 +5,4 @@ sources:
     database: ai_analytics
     description: ""
     tables:
-      - name: trips_small
+      - name: tableau_marketing_romi_weekly

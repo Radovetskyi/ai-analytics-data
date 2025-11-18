@@ -1,60 +1,242 @@
 semantic_models:
-  - name: fact_trips
-    description: "NYC Taxi Trips fact table"
-    model: ref('trips_dashboard')
+  - name: fact_marketing_romi
+    description: "Marketing ROMI Weekly fact table"
+    model: ref('tableau_marketing_romi_weekly')
 
     entities:
-      - name: trip
+      - name: marketing_record
         type: primary
-        expr: trip_id
+        expr: "concat(toString(account_id), '_', campaign_name, '_', ad_group_name, '_', country, '_', toString(last_date_of_week))"
 
     dimensions:
-      - name: pickup_datetime
+      - name: last_date_of_week
         type: time
         type_params:
-          time_granularity: day
+          time_granularity: week
 
-      - name: dropoff_datetime
-        type: time
-        type_params:
-          time_granularity: day
-
-      - name: pickup_ntaname
+      - name: account_id
         type: categorical
 
-      - name: dropoff_ntaname
+      - name: campaign_name
         type: categorical
 
-      - name: payment_type
+      - name: ad_group_name
         type: categorical
 
-      - name: passenger_count
+      - name: country
         type: categorical
 
-      - name: trip_duration_minutes
-        expr: "dateDiff('minute', pickup_datetime, dropoff_datetime)"
+      - name: campaign_group
         type: categorical
 
-      - name: trip_day_of_week
-        expr: "toDayOfWeek(pickup_datetime)"
+      - name: responsible
         type: categorical
 
     measures:
-      - name: trips
-        agg: count
-
-      - name: total_amount
-        expr: total_amount
+      - name: cost_euro
+        expr: cost_euro
         agg: sum
 
-      - name: avg_trip_amount
-        expr: total_amount
-        agg: average
-
-      - name: total_tips
-        expr: tip_amount
+      - name: clicks
+        expr: clicks
         agg: sum
 
-      - name: avg_tip_pct
-        expr: "tip_amount / nullIf(fare_amount, 0)"
+      - name: conversions_c0
+        expr: c0
+        agg: sum
+
+      - name: conversions_c1
+        expr: c1
+        agg: sum
+
+      - name: conversions_c1_censored
+        expr: c1_censored
+        agg: sum
+
+      - name: conversions_c2
+        expr: c2
+        agg: sum
+
+      - name: conversions_c3
+        expr: c3
+        agg: sum
+
+      - name: conversions_c4
+        expr: c4
+        agg: sum
+
+      - name: conversions_c5
+        expr: c5
+        agg: sum
+
+      - name: conversions_c6
+        expr: c6
+        agg: sum
+
+      - name: conversions_c7
+        expr: c7
+        agg: sum
+
+      - name: conversions_c8
+        expr: c8
+        agg: sum
+
+      - name: conversions_c9
+        expr: c9
+        agg: sum
+
+      - name: conversions_c10
+        expr: c10
+        agg: sum
+
+      - name: conversions_c11
+        expr: c11
+        agg: sum
+
+      - name: conversions_c12
+        expr: c12
+        agg: sum
+
+      - name: revenue
+        expr: revenue
+        agg: sum
+
+      - name: latam_ebanx_revenue
+        expr: latam_ebanx_revenue
+        agg: sum
+
+      - name: latam_dlocal_revenue
+        expr: latam_dlocal_revenue
+        agg: sum
+
+      - name: refunded_revenue
+        expr: refunded_revenue
+        agg: sum
+
+      - name: trial_revenue
+        expr: trial_revenue
+        agg: sum
+
+      - name: subscription_revenue
+        expr: subscription_revenue
+        agg: sum
+
+      - name: proccessing_rate
+        expr: proccessing_rate
         agg: average
+
+      - name: country_tax
+        expr: country_tax
+        agg: average
+
+      - name: target_romi
+        expr: target_romi
+        agg: average
+
+      - name: c0_c1_censored
+        expr: c0_c1_censored
+        agg: sum
+
+      - name: c1_2
+        expr: c1_2
+        agg: sum
+
+      - name: c2_3
+        expr: c2_3
+        agg: sum
+
+      - name: c3_4
+        expr: c3_4
+        agg: sum
+
+      - name: c4_5
+        expr: c4_5
+        agg: sum
+
+      - name: c5_6
+        expr: c5_6
+        agg: sum
+
+      - name: c6_7
+        expr: c6_7
+        agg: sum
+
+      - name: c7_8
+        expr: c7_8
+        agg: sum
+
+      - name: c8_9
+        expr: c8_9
+        agg: sum
+
+      - name: c9_10
+        expr: c9_10
+        agg: sum
+
+      - name: c10_11
+        expr: c10_11
+        agg: sum
+
+      - name: c11_12
+        expr: c11_12
+        agg: sum
+
+      - name: refund_rate
+        expr: refund_rate
+        agg: average
+
+      - name: c0_c1
+        expr: c0_c1
+        agg: sum
+
+      - name: c01_coef
+        expr: c01_coef
+        agg: average
+
+      - name: c1_corrected
+        expr: c1_corrected
+        agg: sum
+
+      - name: subscription_price
+        expr: subscription_price
+        agg: average
+
+      - name: gross_revenue_6
+        expr: gross_revenue_6
+        agg: sum
+
+      - name: gross_revenue_12
+        expr: gross_revenue_12
+        agg: sum
+
+      - name: net_revenue_6
+        expr: net_revenue_6
+        agg: sum
+
+      - name: net_revenue_12
+        expr: net_revenue_12
+        agg: sum
+
+      - name: taxes_12
+        expr: taxes_12
+        agg: sum
+
+      - name: refunds_12
+        expr: refunds_12
+        agg: sum
+
+      - name: ebanx_share
+        expr: ebanx_share
+        agg: average
+
+      - name: dlocal_share
+        expr: dlocal_share
+        agg: average
+
+      - name: net_revenue_6_forex
+        expr: net_revenue_6_forex
+        agg: sum
+
+      - name: net_revenue_12_forex
+        expr: net_revenue_12_forex
+        agg: sum
